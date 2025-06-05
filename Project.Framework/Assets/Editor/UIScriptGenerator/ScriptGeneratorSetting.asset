@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8a0dfbcd6854965bb6ae78627009a53, type: 3}
+  m_Name: ScriptGeneratorSetting
+  m_EditorClassIdentifier: 
+  _codePath: 
+  _namespace: GameLogic
+  _widgetName: item
+  CodeStyle: 0
+  scriptGenerateRule:
+  - uiElementRegex: m_go
+    componentName: GameObject
+    isUIWidget: 0
+  - uiElementRegex: m_item
+    componentName: GameObject
+    isUIWidget: 0
+  - uiElementRegex: m_tf
+    componentName: Transform
+    isUIWidget: 0
+  - uiElementRegex: m_rect
+    componentName: RectTransform
+    isUIWidget: 0
+  - uiElementRegex: m_text
+    componentName: Text
+    isUIWidget: 0
+  - uiElementRegex: m_richText
+    componentName: RichTextItem
+    isUIWidget: 0
+  - uiElementRegex: m_btn
+    componentName: Button
+    isUIWidget: 0
+  - uiElementRegex: m_img
+    componentName: Image
+    isUIWidget: 0
+  - uiElementRegex: m_rimg
+    componentName: RawImage
+    isUIWidget: 0
+  - uiElementRegex: m_scrollBar
+    componentName: Scrollbar
+    isUIWidget: 0
+  - uiElementRegex: m_scroll
+    componentName: ScrollRect
+    isUIWidget: 0
+  - uiElementRegex: m_input
+    componentName: InputField
+    isUIWidget: 0
+  - uiElementRegex: m_grid
+    componentName: GridLayoutGroup
+    isUIWidget: 0
+  - uiElementRegex: m_hlay
+    componentName: HorizontalLayoutGroup
+    isUIWidget: 0
+  - uiElementRegex: m_vlay
+    componentName: VerticalLayoutGroup
+    isUIWidget: 0
+  - uiElementRegex: m_slider
+    componentName: Slider
+    isUIWidget: 0
+  - uiElementRegex: m_toggle
+    componentName: Toggle
+    isUIWidget: 0
+  - uiElementRegex: m_group
+    componentName: ToggleGroup
+    isUIWidget: 0
+  - uiElementRegex: m_curve
+    componentName: AnimationCurve
+    isUIWidget: 0
+  - uiElementRegex: m_canvasGroup
+    componentName: CanvasGroup
+    isUIWidget: 0
+  - uiElementRegex: m_tmp
+    componentName: TextMeshProUGUI
+    isUIWidget: 0
+  - uiElementRegex: m_vmText
+    componentName: Text
+    isUIWidget: 0
+  - uiElementRegex: m_vmBtn
+    componentName: Button
+    isUIWidget: 0
