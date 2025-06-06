@@ -4,15 +4,13 @@
 
 ### UnityFramework
 
-##### UnityFramework基于<a href="https://github.com/Alex-Rachel/TEngine"><strong>TEngine</strong></a>框架（集成了<a href="https://github.com/focus-creative-games/hybridclr"><strong>HybridCLR</strong></a>和<a href="https://github.com/tuyoogame/YooAsset"><strong>YooAsset</strong></a>的热更资源管理以及<a href="https://github.com/focus-creative-games/luban"><strong>Luban</strong></a>配置表的优秀框架）进行逻辑调整，目前增加了Mvvm属性数据绑定模块
+##### UnityFramework内核基于<a href="https://github.com/Alex-Rachel/TEngine"><strong>TEngine</strong></a>（集成了<a href="https://github.com/focus-creative-games/hybridclr"><strong>HybridCLR</strong></a>和<a href="https://github.com/tuyoogame/YooAsset"><strong>YooAsset</strong></a>的优秀轻量级Unity框架），参考[loxodon-framework](https://github.com/vovgou/loxodon-framework)和[WPF](https://github.com/dotnet/wpf)进行mvvm模式的优化调整
 
-##### 使用文档参考<a href="https://github.com/Alex-Rachel/TEngine/blob/main/Books/99-%E5%90%84%E5%B9%B3%E5%8F%B0%E8%BF%90%E8%A1%8CRunAble.md"><strong>TEngineh使用文档</strong></a>（除UI模块外的上层功能调用方式不变；UI模块参考Demo）
+##### 资源模块、内存池模块、对象池模块、配置表模块可参考<a href="https://github.com/Alex-Rachel/TEngine/blob/main/Books/99-%E5%90%84%E5%B9%B3%E5%8F%B0%E8%BF%90%E8%A1%8CRunAble.md"><strong>TEngine使用文档</strong></a>
 
-##### 以前写WPF写多了，想试试在Unity中使用Mvvm，通读几个开源框架后选择了A大的TEngine
+##### UI模块改为mvvm模式，事件模块增加绑定消息通知逻辑，流程模块增加状态检查，具体使用可参考demo目录
 
-##### 数据绑定模块基于[loxodon-framework](https://github.com/vovgou/loxodon-framework)进行优化调整，loxodon-framework框架ui模块绑定mono，不太习惯
-
-##### 有空的时候会继续优化游戏框架逻辑以及接入Obfuz等内容
+##### 下一步会继续优化游戏框架以及接入Obfuz流程和补充文档等内容
 
 
 
@@ -28,4 +26,4 @@
 
 ##### <a href="https://github.com/tuyoogame/YooAsset"><strong>YooAsset</strong></a> - YooAsset是一套商业级经历百万DAU游戏验证的资源管理系统。
 
-##### <a href="https://github.com/focus-creative-games/luban"><strong>Luban</strong></a> - luban是一个强大、易用、优雅、稳定的游戏配置解决方案。它设计目标为满足从小型到超大型游戏项目的简单到复杂的游戏配置工作流需求。
+##### <a href="https://github.com/dotnet/wpf"><strong>WPF</strong></a> - 这玩意...怎么说呢

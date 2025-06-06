@@ -30,9 +30,9 @@ namespace GameLogic.ViewModel
             _homeCommand = new SimpleCommand(GoHome);
             _resetCommand = new SimpleCommand(UniTask.UnityAction(Reset));
             _battleModel = new BattleModel();
-            _battleModel.PropertyChanged += (s, args) =>
+            _battleModel.PropertyChanged += (s, e) =>
             {
-                if (args.PropertyName == nameof(Score))
+                if (e.PropertyName == nameof(Score))
                 {
                     IServiceContainer container = GameApp.ApplicationContext.GetContainer();
                     var obj = container.Resolve(nameof(IBattleService));
