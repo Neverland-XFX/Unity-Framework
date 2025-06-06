@@ -1,0 +1,8 @@
+{
+    "ServerStatus" : "1",
+    "ServerMaintainedContentChineseSimplified": "x",
+    "ServerMaintainedContentChineseTraditional": "xx",
+    "ServerMaintainedContentEnglish": "xxx",
+    "ServerMaintainedContentJapanese": "xxxx",
+    "ServerMaintainedContentKorean" : "xxxxx"
+}

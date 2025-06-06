@@ -637,7 +637,7 @@ public class Executors
                     }
                     catch (Exception e)
                     {
-                        
+                        Log.Error(e);
                     }
                 }
                 stopingTempQueue.Clear();
@@ -674,7 +674,7 @@ public class Executors
                     }
                     catch (Exception e)
                     {
-                        
+                        Log.Error(e);
                     }
                 }
                 runningQueue.Clear();

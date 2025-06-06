@@ -26,6 +26,14 @@ public static class UnityFrameworkSettingsProvider
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("AssemblyTextAssetExtension"));  
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("AssemblyTextAssetPath"));  
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("UpdateStyle"));  
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("EnableUpdateData"));
+                if (settings.EnableUpdateData)
+                {
+                    EditorGUILayout.PropertyField(serializedObject.FindProperty("ServerStateDatePath"));  
+                    EditorGUILayout.PropertyField(serializedObject.FindProperty("ServerStateDataFileName"));  
+                    EditorGUILayout.PropertyField(serializedObject.FindProperty("UpdateDataPath"));  
+                    EditorGUILayout.PropertyField(serializedObject.FindProperty("UpdateDataFileName"));  
+                }
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("ResDownLoadPath"));  
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("FallbackResDownLoadPath"));  
                 serializedObject.ApplyModifiedProperties();  

@@ -12,8 +12,8 @@ public class Context : IDisposable
         private static ApplicationContext context = null;
         private static Dictionary<string, Context> contexts = null;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        static void OnInitialize()
+        
+        public static void OnInitialize()
         {
             //For compatibility with the "Configurable Enter Play Mode" feature
 #if UNITY_2019_3_OR_NEWER //&& UNITY_EDITOR
@@ -38,10 +38,6 @@ public class Context : IDisposable
 
         public static ApplicationContext GetApplicationContext()
         {
-            if (context == null)
-            {
-                OnInitialize();
-            }
             return Context.context;
         }
 
@@ -153,7 +149,6 @@ public class Context : IDisposable
 
         public virtual IServiceContainer GetContainer()
         {
-            Log.Warning("1.1");
             return this.container;
         }
 

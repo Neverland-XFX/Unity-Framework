@@ -5,7 +5,6 @@ using UnityFramework;
 using UnityEngine;
 using YooAsset;
 using ProcedureOwner = UnityFramework.IFsm<UnityFramework.IProcedureModule>;
-using Utility = UnityFramework.Utility;
 
 namespace Procedure
 {
@@ -24,12 +23,125 @@ namespace Procedure
 
             _procedureOwner = procedureOwner;
 
-            //Fire Forget立刻触发UniTask初始化Package
-            InitPackage(procedureOwner).Forget();
+            if (_resourceModule.PlayMode == EPlayMode.HostPlayMode ||
+                _resourceModule.PlayMode == EPlayMode.WebPlayMode)
+            {
+                CheckServerState(procedureOwner).Forget();
+            }
+            else
+            {
+                InitPackage(procedureOwner).Forget();                
+            }
         }
 
+        private async UniTaskVoid CheckServerState(ProcedureOwner procedureOwner)
+        {
+            var checkVersionUrl = Settings.UpdateSetting.GetServerStateDataPath();
+            if (string.IsNullOrEmpty(checkVersionUrl))
+            {
+                Log.Error("LoadMgr.RequestVersion, remote url is empty or null");
+                LauncherMgr.ShowMessageBox(LoadText.Instance.Label_RemoteUrlisNull, MessageShowType.OneButton,
+                    LoadStyle.StyleEnum.Style_QuitApp,
+                    Application.Quit);
+                return;
+            }
+            Log.Info("RequestUpdateData, proxy:" + checkVersionUrl);
+
+            var updateDataStr = await Utility.Http.Get(checkVersionUrl);
+
+            try
+            {
+                ServiceUpdateData serviceUpdateData = Utility.Json.ToObject<ServiceUpdateData>(updateDataStr);
+
+                if (serviceUpdateData.ServerStatus == ServerStatus.Maintained)
+                {
+                    DisplayMaintainedTip(serviceUpdateData);   
+                }
+                else
+                {
+                    InitPackage(procedureOwner).Forget();
+                }
+
+            }
+            catch (Exception e)
+            {
+                Log.Fatal(e);
+                Application.Quit();
+                throw;
+            }
+        }
+
+        private void DisplayMaintainedTip(ServiceUpdateData data)
+        {
+            string content;
+            Language language = Language.English;
+            if (Utility.PlayerPrefs.HasSetting(Constant.Setting.Language))
+            {
+                try
+                {
+                    string languageString = Utility.PlayerPrefs.GetString(Constant.Setting.Language);
+                    language = (Language)System.Enum.Parse(typeof(Language), languageString);
+                }
+                catch(System.Exception exception)
+                {
+                    Log.Error("Init language error, reason {0}",exception.ToString());
+                }
+            }
+            switch (language)
+            {
+                case Language.ChineseSimplified:
+                    content = data.ServerMaintainedContentChineseSimplified;
+                    break;
+                case Language.English:
+                    content = data.ServerMaintainedContentEnglish;
+                    break;
+                case Language.ChineseTraditional:
+                    content = data.ServerMaintainedContentChineseTraditional;
+                    break;
+                case Language.Russian:
+                    content = data.ServerMaintainedContentRussian;
+                    break;
+                case Language.Japanese:
+                    content = data.ServerMaintainedContentJapanese;
+                    break;
+                case Language.Korean:
+                    content = data.ServerMaintainedContentKorean;
+                    break;
+                default:
+                    content = data.ServerMaintainedContentEnglish;
+                    break;
+            }
+            LauncherMgr.ShowMessageBox(content, MessageShowType.OneButton,
+                LoadStyle.StyleEnum.Style_Default,
+                Application.Quit);
+        }
+        
         private async UniTaskVoid InitPackage(ProcedureOwner procedureOwner)
         {
+            if (_resourceModule.PlayMode == EPlayMode.HostPlayMode ||
+                _resourceModule.PlayMode == EPlayMode.WebPlayMode)
+            {
+                if (Settings.UpdateSetting.EnableUpdateData)
+                {
+                    UpdateData updateData = await RequestUpdateData();
+                    
+                    if (updateData != null)
+                    {
+                        Settings.UpdateSetting.UpdateStyle = updateData.UpdateStyle;
+                        Settings.UpdateSetting.UpdateNotice = updateData.UpdateNotice;
+                        
+                        if (!string.IsNullOrEmpty(updateData.HostServerURL))
+                        {
+                            Settings.UpdateSetting.ResDownLoadPath = updateData.HostServerURL;
+                        }
+
+                        if (!string.IsNullOrEmpty(updateData.FallbackHostServerURL))
+                        {
+                            Settings.UpdateSetting.FallbackResDownLoadPath = updateData.FallbackHostServerURL;
+                        }
+                    }
+                }
+            }
             try
             {
                 var initializationOperation = await _resourceModule.InitPackage(_resourceModule.DefaultPackageName);
@@ -118,6 +230,41 @@ namespace Procedure
             LauncherMgr.Show(UIDefine.UILoadUpdate, $"重新初始化资源中...");
 
             InitPackage(procedureOwner).Forget();
+        }
+        
+        
+        /// <summary>
+        /// 请求更新配置数据。
+        /// </summary>
+        private async UniTask<UpdateData> RequestUpdateData()
+        {
+            // 打开启动UI。
+            LauncherMgr.Show(UIDefine.UILoadUpdate);
+
+            var checkVersionUrl = Settings.UpdateSetting.GetUpdateDataPath();
+
+            if (string.IsNullOrEmpty(checkVersionUrl))
+            {
+                Log.Error("LoadMgr.RequestVersion, remote url is empty or null");
+                return null;
+            }
+
+            Log.Info("RequestUpdateData, proxy:" + checkVersionUrl);
+            try
+            {
+                var updateDataStr = await Utility.Http.Get(checkVersionUrl);
+                UpdateData updateData = Utility.Json.ToObject<UpdateData>(updateDataStr);
+                return updateData;
+            }
+            catch (Exception e)
+            {
+                // 打开启动UI。
+                LauncherMgr.ShowMessageBox("请求配置数据失败！点击确认重试", MessageShowType.TwoButton,
+                    LoadStyle.StyleEnum.Style_Retry
+                    , () => { InitPackage(_procedureOwner).Forget(); }, Application.Quit);
+                Log.Warning(e);
+                return null;
+            }
         }
     }
 }

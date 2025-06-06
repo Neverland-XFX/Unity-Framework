@@ -6,8 +6,7 @@ namespace GameLogic.Binding
 {
     public class UISynchronizationContext
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        static void OnInitialize()
+        public static void OnInitialize()
         {
             context = SynchronizationContext.Current;
             threadId = Thread.CurrentThread.ManagedThreadId;

@@ -6,8 +6,10 @@ using GameLogic.Binding;
 using GameLogic.Contexts;
 using UnityFramework;
 using GameLogic.Binding.Services;
+using GameLogic.Execution;
 using GameLogic.Repositories;
 using GameLogic.Services;
+using UnityFramework.Localization;
 
 #pragma warning disable CS0436
 
@@ -33,7 +35,7 @@ public partial class GameApp
         StartGameLogic();
     }
     
-    public static ApplicationContext Context;
+    public static ApplicationContext ApplicationContext;
     // private static ISubscription<BattleEventArgs> _battleSubscription;
     
     /// <summary>
@@ -42,19 +44,22 @@ public partial class GameApp
     /// </summary>
     private static void StartGameLogic()
     {
-        // InitMvvmModule();
-        UIModule.Instance.Active();
-        //1.2-1.3进不去，因为ThreadID不相等。原因是[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]这个特性的时序太慢了
-        Context = GameLogic.Contexts.Context.GetApplicationContext();
-
-        Log.Warning($"2,Context={Context}");
-        IServiceContainer container = Context.GetContainer();
-        BindingServiceBundle bundle = new BindingServiceBundle(Context.GetContainer());
+        InitMvvmModule();
+        ApplicationContext = Context.GetApplicationContext();
+        var container = ApplicationContext.GetContainer();
+        var bundle = new BindingServiceBundle(container);
         bundle.Start();
         IBattleRepository accountRepository = new BattleRepository();
         container.Register<IBattleService>(new BattleService(accountRepository));
         
+        UIModule.Instance.Active();
         StartBattleRoom().Forget();
+    }
+
+    private static void InitMvvmModule()
+    {
+        Context.OnInitialize();
+        UISynchronizationContext.OnInitialize();
     }
 
     private static async UniTaskVoid StartBattleRoom()

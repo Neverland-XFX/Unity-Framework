@@ -834,11 +834,7 @@ namespace UnityFramework
                 }
                 catch (Exception e)
                 {
-#if DEBUG
-                    throw;
-#else
                     Log.Error(e);
-#endif
                 }
             }
 

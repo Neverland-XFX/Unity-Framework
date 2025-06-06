@@ -28,5 +28,10 @@ MonoBehaviour:
   AssemblyTextAssetPath: AssetRaw/DLL
   UpdateStyle: 1
   UpdateNotice: 1
+  EnableUpdateData: 1
+  UpdateDataPath: http://127.0.0.1/ABHotUpdate/UpdateData/
+  UpdateDataFileName: UpdateData.json
+  ServerStateDatePath: http://127.0.0.1/ABHotUpdate/UpdateData/
+  ServerStateDataFileName: ServerStateData.json
   ResDownLoadPath: http://127.0.0.1/ABHotUpdate/
   FallbackResDownLoadPath: http://127.0.0.1/ABHotUpdate/

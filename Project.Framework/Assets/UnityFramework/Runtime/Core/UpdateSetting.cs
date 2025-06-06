@@ -84,17 +84,42 @@ namespace UnityFramework
 
         public UpdateNotice UpdateNotice = UpdateNotice.Notice;
 
+        [SerializeField]
+        public bool EnableUpdateData = true;
+
+        [SerializeField]
+        private string UpdateDataPath = "http://127.0.0.1:8080";
+        
+        [SerializeField]
+        private string UpdateDataFileName = "UpdateData.json"; 
+        
+        public string GetUpdateDataPath()
+        {
+            return Path.Combine(UpdateDataPath, projectName,UpdateDataFileName).Replace("\\", "/");
+        }
+
+        [SerializeField]
+        private string ServerStateDatePath = "http://127.0.0.1:8080";
+
+        [SerializeField]
+        private string ServerStateDataFileName = "ServerStateData.json"; 
+
+        public string GetServerStateDataPath()
+        {
+            return Path.Combine(ServerStateDatePath, projectName,ServerStateDataFileName).Replace("\\", "/");
+        }
+        
         /// <summary>
         /// 资源服务器地址。
         /// </summary>
         [SerializeField]
-        private string ResDownLoadPath = "http://127.0.0.1:8081";
+        public string ResDownLoadPath = "http://127.0.0.1:8081";
 
         /// <summary>
         /// 资源服务备用地址。
         /// </summary>
         [SerializeField]
-        private string FallbackResDownLoadPath = "http://127.0.0.1:8082";
+        public string FallbackResDownLoadPath = "http://127.0.0.1:8082";
 
         /// <summary>
         /// 获取资源下载路径。

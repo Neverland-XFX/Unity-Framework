@@ -1,0 +1,8 @@
+{
+    "CurrentVersion" : "1",
+    "UpdateType": 2,
+    "UpdateStyle": 1,
+    "UpdateNotice": 1,
+    "HostServerURL": "http://127.0.0.1/ABHotUpdate/",
+    "FallbackHostServerURL" : "http://127.0.0.1/ABHotUpdate/"
+}

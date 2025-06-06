@@ -11,7 +11,8 @@ namespace UnityFramework.Localization
 	public class LocalizeTarget_NGUI_Sprite : LocalizeTarget<UISprite>
 	{
         static LocalizeTarget_NGUI_Sprite() { AutoRegister(); }
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)] static void AutoRegister() { LocalizationManager.RegisterTarget(new LocalizeTargetDesc_Type<UISprite, LocalizeTarget_NGUI_Sprite>() { Name = "NGUI UISprite", Priority = 100 }); }
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+ publish static void AutoRegister() { LocalizationManager.RegisterTarget(new LocalizeTargetDesc_Type<UISprite, LocalizeTarget_NGUI_Sprite>() { Name = "NGUI UISprite", Priority = 100 }); }
 
         public override eTermType GetPrimaryTermType(Localize cmp) { return eTermType.Sprite; }
         public override eTermType GetSecondaryTermType(Localize cmp) { return eTermType.UIAtlas; }
