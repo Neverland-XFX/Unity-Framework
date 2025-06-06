@@ -28,5 +28,5 @@ MonoBehaviour:
   AssemblyTextAssetPath: AssetRaw/DLL
   UpdateStyle: 1
   UpdateNotice: 1
-  ResDownLoadPath: http://192.168.5.5/ABHotUpdate/
-  FallbackResDownLoadPath: http://192.168.5.5/ABHotUpdate/
+  ResDownLoadPath: http://127.0.0.1/ABHotUpdate/
+  FallbackResDownLoadPath: http://127.0.0.1/ABHotUpdate/

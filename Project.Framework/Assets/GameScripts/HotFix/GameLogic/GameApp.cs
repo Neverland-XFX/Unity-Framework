@@ -42,20 +42,18 @@ public partial class GameApp
     /// </summary>
     private static void StartGameLogic()
     {
+        // InitMvvmModule();
+        UIModule.Instance.Active();
+        //1.2-1.3进不去，因为ThreadID不相等。原因是[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]这个特性的时序太慢了
         Context = GameLogic.Contexts.Context.GetApplicationContext();
 
+        Log.Warning($"2,Context={Context}");
         IServiceContainer container = Context.GetContainer();
         BindingServiceBundle bundle = new BindingServiceBundle(Context.GetContainer());
         bundle.Start();
         IBattleRepository accountRepository = new BattleRepository();
         container.Register<IBattleService>(new BattleService(accountRepository));
         
-        // _battleSubscription = GameEvent.Subscribe<BattleEventArgs>(e =>
-        // {
-        //     
-        // });
-        
-        UIModule.Instance.Active();
         StartBattleRoom().Forget();
     }
 

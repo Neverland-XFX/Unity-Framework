@@ -43,6 +43,7 @@ namespace GameLogic.Binding
 
             this.CreateTargetProxy(target, this.bindingDescription);
             this.CreateSourceProxy(this.DataContext, this.bindingDescription.Source);
+            Log.Warning($"dataContext: {this.DataContext},bindingDescription: {this.bindingDescription}");
             this.UpdateDataOnBind();
         }
 
@@ -92,19 +93,25 @@ namespace GameLogic.Binding
         {
             try
             {
+                Log.Warning($"Updating data on binding.BindingMode:{BindingMode},sourceProxy:{sourceProxy?.GetType().Name},targetProxy:{targetProxy?.GetType().Name}");
                 if (this.UpdateTargetOnFirstBind(this.BindingMode) && this.sourceProxy != null)
                 {
+                    Log.Info("1");
                     this.UpdateTargetFromSource();
+                    Log.Info("2");
                 }
 
+                
                 if (this.UpdateSourceOnFirstBind(this.BindingMode) && this.targetProxy != null && this.targetProxy is IObtainable)
                 {
+                    Log.Info("3");
                     this.UpdateSourceFromTarget();
+                    Log.Info("4");
                 }
             }
             catch (Exception e)
             {
-                Log.Warning("An exception occurs in UpdateTargetOnBind.exception: {0}", e);
+                Log.Error("An exception occurs in UpdateTargetOnBind.exception: {0}", e);
             }
         }
 
@@ -174,9 +181,12 @@ namespace GameLogic.Binding
 
         protected virtual void UpdateTargetFromSource()
         {
+            Log.Info("1.1");
             if (UISynchronizationContext.InThread)
             {
+                Log.Info("1.2");
                 DoUpdateTargetFromSource(null);
+                Log.Info("1.3");
             }
             else
             {
@@ -184,11 +194,15 @@ namespace GameLogic.Binding
                 if (updateTargetAction == null)
                     updateTargetAction = DoUpdateTargetFromSource;
 #else
+                Log.Info("1.4");
                 if (updateTargetAction == null)
                     Interlocked.CompareExchange(ref updateTargetAction, DoUpdateTargetFromSource, null);
+                Log.Info("1.5");
 #endif
                 //Run on the main thread
+                Log.Info($"1.6,updateTargetAction={updateTargetAction}");
                 UISynchronizationContext.Post(updateTargetAction, null);
+                Log.Info("1.7");
             }
         }
 

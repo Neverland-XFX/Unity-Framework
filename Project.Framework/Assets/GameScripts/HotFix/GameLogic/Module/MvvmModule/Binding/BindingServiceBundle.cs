@@ -12,6 +12,7 @@ using GameLogic.Binding.Proxy.Targets.Universal;
 using GameLogic.Binding.Proxy.Text;
 using GameLogic.Binding.Services;
 using GameLogic.Binding.Sources;
+using UnityFramework;
 
 namespace GameLogic.Binding
 {
@@ -19,6 +20,7 @@ public class BindingServiceBundle : AbstractServiceBundle
     {
         public BindingServiceBundle(IServiceContainer container) : base(container)
         {
+            
         }
 
         protected override void OnStart(IServiceContainer container)

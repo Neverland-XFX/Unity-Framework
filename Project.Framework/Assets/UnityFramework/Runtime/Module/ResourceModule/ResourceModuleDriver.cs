@@ -76,7 +76,7 @@ namespace UnityFramework
 #else
                 if (playMode == EPlayMode.EditorSimulateMode)
                 {
-                    playMode = EPlayMode.OfflinePlayMode;
+                    playMode = EPlayMode.HostPlayMode;
                 }
                 //运行时使用。
                 return playMode;
@@ -240,7 +240,7 @@ namespace UnityFramework
             {
                 Log.Info("During this run, ResourceModule will use editor resource files, which you should validate first.");
 #if !UNITY_EDITOR
-                PlayMode = EPlayMode.OfflinePlayMode;
+                PlayMode = EPlayMode.HostPlayMode;
 #endif
             }
 

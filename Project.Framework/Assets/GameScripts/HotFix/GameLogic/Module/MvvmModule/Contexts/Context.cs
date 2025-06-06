@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using GameLogic.Binding.Services;
 using UnityEngine;
+using UnityFramework;
 
 namespace GameLogic.Contexts
 {
@@ -37,6 +38,10 @@ public class Context : IDisposable
 
         public static ApplicationContext GetApplicationContext()
         {
+            if (context == null)
+            {
+                OnInitialize();
+            }
             return Context.context;
         }
 
@@ -148,6 +153,7 @@ public class Context : IDisposable
 
         public virtual IServiceContainer GetContainer()
         {
+            Log.Warning("1.1");
             return this.container;
         }
 

@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using UnityEngine;
+using UnityFramework;
 
 namespace GameLogic.Binding
 {
@@ -19,10 +20,13 @@ namespace GameLogic.Binding
 
         public static void Post(SendOrPostCallback callback, object state)
         {
+            Log.Info($"1.6.1,context={context}, threadId={threadId},Thread.CurrentThread.ManagedThreadId = {Thread.CurrentThread.ManagedThreadId}, callback={callback}, state={state}");
             if (threadId == Thread.CurrentThread.ManagedThreadId)
                 callback(state);
             else
                 context.Post(callback, state);
+            
+            Log.Info("1.6.2");
         }
         public static void Send(SendOrPostCallback callback, object state)
         {
