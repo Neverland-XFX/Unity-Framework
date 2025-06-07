@@ -58,7 +58,7 @@ namespace UnityFramework
 
             private string GetResolutionString(Resolution resolution)
             {
-#if UNITY_6000_0_OR_NEWER
+#if UNITY_2022_1_OR_NEWER
                 return Utility.Text.Format("{0} x {1} @ {2}Hz", resolution.width, resolution.height, resolution.refreshRateRatio);
 #else
                 return Utility.Text.Format("{0} x {1} @ {2}Hz", resolution.width, resolution.height, resolution.refreshRate);

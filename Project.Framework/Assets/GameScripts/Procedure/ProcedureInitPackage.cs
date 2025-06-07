@@ -133,11 +133,13 @@ namespace Procedure
                         if (!string.IsNullOrEmpty(updateData.HostServerURL))
                         {
                             Settings.UpdateSetting.ResDownLoadPath = updateData.HostServerURL;
+                            Log.Info($"current resDownloadPath: {Settings.UpdateSetting.ResDownLoadPath}");
                         }
 
                         if (!string.IsNullOrEmpty(updateData.FallbackHostServerURL))
                         {
                             Settings.UpdateSetting.FallbackResDownLoadPath = updateData.FallbackHostServerURL;
+                            Log.Info($"current fallbackResDownloadPath: {Settings.UpdateSetting.FallbackResDownLoadPath}");
                         }
                     }
                 }

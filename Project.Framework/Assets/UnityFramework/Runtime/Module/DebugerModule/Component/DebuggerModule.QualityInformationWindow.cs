@@ -33,7 +33,7 @@ namespace UnityFramework
                     DrawItem("Desired Color Space", QualitySettings.desiredColorSpace.ToString());
                     DrawItem("Max Queued Frames", QualitySettings.maxQueuedFrames.ToString());
                     DrawItem("Pixel Light Count", QualitySettings.pixelLightCount.ToString());
-#if UNITY_6000_0_OR_NEWER
+#if UNITY_2022_1_OR_NEWER
                     DrawItem("Master Texture Limit", QualitySettings.globalTextureMipmapLimit.ToString());
 #else
                     DrawItem("Master Texture Limit", QualitySettings.masterTextureLimit.ToString());
