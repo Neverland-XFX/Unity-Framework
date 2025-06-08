@@ -5,8 +5,14 @@ namespace GameLogic.Model
 {
     public class BattleModel : ObservableObject
     {
+        private bool _isGameOver;
         private string _score;
 
+        public bool IsGameOver
+        {
+            get => _isGameOver;
+            set=>Set(ref _isGameOver,value);
+        }
         public string Score
         {
             get => _score;
@@ -16,9 +22,14 @@ namespace GameLogic.Model
         public BattleModel()
         {
             GameEvent.AddEventListener<int>(ActorEventDefine.ScoreChange, OnScoreChange);
-            // GameEvent.AddEventListener<int>(ActorEventDefine.GameOver, OnGameOver);
+            GameEvent.AddEventListener(ActorEventDefine.GameOver, OnGameOver);
         }
-        
+
+        private void OnGameOver()
+        {
+            IsGameOver = true;
+        }
+
         private void OnScoreChange(int obj)
         {
             Score = obj.ToString();

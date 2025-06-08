@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
+﻿using Cysharp.Threading.Tasks;
 using GameLogic.Model;
 
 namespace GameLogic.Repositories
@@ -15,9 +13,9 @@ namespace GameLogic.Repositories
             return UniTask.FromResult(_cache);
         }
 
-        public virtual UniTask<BattleModel> Update(BattleModel Battle)
+        public virtual UniTask<BattleModel> Update(BattleModel model)
         {
-            _cache = Battle;
+            _cache = model;
             return UniTask.FromResult(_cache);
         }
     }

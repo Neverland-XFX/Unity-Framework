@@ -72,7 +72,7 @@ public class BattleSystem : Singleton<BattleSystem>
         GameModule.Mvvm.Register<IBattleRepository, BattleRepository, IBattleService, BattleService>(
             repo => new BattleService(repo)
         );
-
+        
         // 加载背景音乐
         GameModule.Audio.Play(AudioType.Music, "music_background", true);
 

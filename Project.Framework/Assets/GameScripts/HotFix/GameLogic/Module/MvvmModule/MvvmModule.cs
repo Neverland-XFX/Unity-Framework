@@ -15,7 +15,7 @@ namespace GameLogic
         {
             Context.OnInitialize();
             UISynchronizationContext.OnInitialize();
-            
+            UnityProxyRegister.Initialize();
             ApplicationContext = Context.GetApplicationContext();
             var container = ApplicationContext.GetContainer();
             var bundle = new BindingServiceBundle(container);
