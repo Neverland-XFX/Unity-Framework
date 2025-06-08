@@ -8,7 +8,7 @@ namespace GameLogic.Repositories
     public class BattleRepository : IBattleRepository
     {
         
-        private BattleModel _cache = new() { Score = 0};
+        private BattleModel _cache = new() { Score = "0"};
 
         public virtual UniTask<BattleModel> Get()
         {

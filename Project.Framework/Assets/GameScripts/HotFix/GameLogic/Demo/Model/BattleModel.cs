@@ -5,9 +5,9 @@ namespace GameLogic.Model
 {
     public class BattleModel : ObservableObject
     {
-        private int _score;
+        private string _score;
 
-        public int Score
+        public string Score
         {
             get => _score;
             set => Set(ref _score, value);
@@ -16,11 +16,12 @@ namespace GameLogic.Model
         public BattleModel()
         {
             GameEvent.AddEventListener<int>(ActorEventDefine.ScoreChange, OnScoreChange);
+            // GameEvent.AddEventListener<int>(ActorEventDefine.GameOver, OnGameOver);
         }
         
         private void OnScoreChange(int obj)
         {
-            Score = obj;
+            Score = obj.ToString();
         }
     }
 }

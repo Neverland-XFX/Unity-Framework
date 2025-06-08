@@ -31,7 +31,6 @@ namespace GameLogic
 
         protected override void RegisterEvent()
         {
-            // AddUIEvent<int>(ActorEventDefine.ScoreChange, OnScoreChange);
             AddUIEvent(ActorEventDefine.GameOver, OnGameOver);
         }
 
@@ -54,14 +53,6 @@ namespace GameLogic
 
         #region 事件
 
-        private async UniTaskVoid OnClickRestartBtn()
-        {
-            await UniTask.Yield();
-            await GameModule.Scene.LoadSceneAsync("scene_battle");
-    
-            BattleSystem.Instance.DestroyRoom();
-            BattleSystem.Instance.LoadRoom().Forget();
-        }
 
         private async UniTaskVoid OnClickHomeBtn()
         {

@@ -22,7 +22,7 @@ namespace GameLogic.Services
             return battle;
         }
 
-        public int GetScore()
+        public string GetScore()
         {
             var battleModelTask = repository.Get();
             var model = battleModelTask.GetAwaiter().GetResult();

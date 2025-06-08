@@ -100,9 +100,7 @@ namespace GameLogic.Binding
                 
                 if (this.UpdateSourceOnFirstBind(this.BindingMode) && this.targetProxy != null && this.targetProxy is IObtainable)
                 {
-                    Log.Info("3");
                     this.UpdateSourceFromTarget();
-                    Log.Info("4");
                 }
             }
             catch (Exception e)
@@ -187,15 +185,11 @@ namespace GameLogic.Binding
                 if (updateTargetAction == null)
                     updateTargetAction = DoUpdateTargetFromSource;
 #else
-                Log.Info("1.4");
                 if (updateTargetAction == null)
                     Interlocked.CompareExchange(ref updateTargetAction, DoUpdateTargetFromSource, null);
-                Log.Info("1.5");
 #endif
                 //Run on the main thread
-                Log.Info($"1.6,updateTargetAction={updateTargetAction}");
                 UISynchronizationContext.Post(updateTargetAction, null);
-                Log.Info("1.7");
             }
         }
 

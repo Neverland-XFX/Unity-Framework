@@ -23,6 +23,6 @@ namespace GameLogic.Services
     {
         UniTask<BattleModel> Update(BattleModel battle);
 
-        int GetScore();
+        string GetScore();
     }
 }

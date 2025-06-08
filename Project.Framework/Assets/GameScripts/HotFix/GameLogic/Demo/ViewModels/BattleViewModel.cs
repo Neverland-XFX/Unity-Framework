@@ -1,10 +1,13 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using System;
+using System.ComponentModel;
+using Cysharp.Threading.Tasks;
 using GameLogic.Binding;
 using GameLogic.Binding.Services;
 using GameLogic.Commands;
 using GameLogic.Model;
 using GameLogic.Prefs;
 using GameLogic.Services;
+using UnityFramework;
 
 namespace GameLogic.ViewModel
 {
@@ -12,35 +15,33 @@ namespace GameLogic.ViewModel
     {
         private SimpleCommand _homeCommand;
         private SimpleCommand _resetCommand;
-        private string _score;
         private BattleModel _battleModel;
-
         
-        public ICommand HomeCommand => this._homeCommand;
-        public ICommand RestartCommand => this._resetCommand;
+        public ICommand HomeCommand => _homeCommand;
+        public ICommand RestartCommand => _resetCommand;
         public string Score
         {
-            get => this._score;
-            set => this.Set(ref this._score, value);
+            get => _battleModel.Score;
+            set
+            {
+                _battleModel.Score = value;
+                RaisePropertyChanged(nameof(Score));
+            }
         }
-        public BattleModel BattleModel => this._battleModel;
 
         public BattleViewModel() 
         {
             _homeCommand = new SimpleCommand(GoHome);
             _resetCommand = new SimpleCommand(UniTask.UnityAction(Reset));
             _battleModel = new BattleModel();
-            _battleModel.PropertyChanged += (s, e) =>
-            {
-                if (e.PropertyName == nameof(Score))
-                {
-                    IServiceContainer container = GameModule.Mvvm.ApplicationContext.GetContainer();
-                    var obj = container.Resolve(nameof(IBattleService));
-                    var temp = obj as IBattleService;
-                    Score = temp?.GetScore().ToString();
-                }
-            };
+            _battleModel.PropertyChanged += OnPropertyChanged;
         }
+        
+        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            RaisePropertyChanged(e.PropertyName);
+        }
+
 
         private async UniTaskVoid Reset()
         {
