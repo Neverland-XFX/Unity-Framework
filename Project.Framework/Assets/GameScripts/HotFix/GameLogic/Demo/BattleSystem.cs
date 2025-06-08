@@ -69,7 +69,10 @@ public class BattleSystem : Singleton<BattleSystem>
         // 创建房间根对象
         _roomRoot = new GameObject("BattleRoom");
 
-        
+        GameModule.Mvvm.Register<IBattleRepository, BattleRepository, IBattleService, BattleService>(
+            repo => new BattleService(repo)
+        );
+
         // 加载背景音乐
         GameModule.Audio.Play(AudioType.Music, "music_background", true);
 
@@ -103,6 +106,8 @@ public class BattleSystem : Singleton<BattleSystem>
         // 	_entitySpawner.DestroyAll(true);
         // }
 
+        GameModule.Mvvm.Unregister(nameof(IBattleService));
+        
         _totalScore = 0;
         
         if (_roomRoot != null)

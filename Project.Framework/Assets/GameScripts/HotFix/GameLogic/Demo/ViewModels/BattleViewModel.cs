@@ -34,7 +34,7 @@ namespace GameLogic.ViewModel
             {
                 if (e.PropertyName == nameof(Score))
                 {
-                    IServiceContainer container = GameApp.ApplicationContext.GetContainer();
+                    IServiceContainer container = GameModule.Mvvm.ApplicationContext.GetContainer();
                     var obj = container.Resolve(nameof(IBattleService));
                     var temp = obj as IBattleService;
                     Score = temp?.GetScore().ToString();
