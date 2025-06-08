@@ -107,12 +107,8 @@ namespace UnityFramework
         private static Module CreateModule(Type moduleType)
         {
             Module module = (Module)Activator.CreateInstance(moduleType);
-            if (module == null)
-            {
-                throw new GameFrameworkException(Utility.Text.Format("Can not create module '{0}'.", moduleType.FullName));
-            }
 
-            _moduleMaps[moduleType] = module;
+            _moduleMaps[moduleType] = module ?? throw new GameFrameworkException(Utility.Text.Format("Can not create module '{0}'.", moduleType.FullName));
 
             RegisterUpdate(module);
 
