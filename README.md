@@ -20,7 +20,7 @@
 
 ##### 资源模块、内存池模块、对象池模块、配置表模块可参考<a href="https://github.com/Alex-Rachel/TEngine/blob/main/Books/99-%E5%90%84%E5%B9%B3%E5%8F%B0%E8%BF%90%E8%A1%8CRunAble.md"><strong>TEngine使用文档</strong></a>
 
-##### UI模块改为mvvm模式，事件模块增加绑定消息通知逻辑，流程模块增加状态检查，具体使用可参考demo目录
+##### 增加mvvm模块，事件模块增加绑定消息通知逻辑，流程模块增加状态检查，具体使用可参考demo目录
 
 ##### 下一步会继续优化游戏框架逻辑、接入Obfuz流程以及补充详细文档等
 
