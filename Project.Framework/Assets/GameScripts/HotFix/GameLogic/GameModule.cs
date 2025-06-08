@@ -63,6 +63,9 @@ public class GameModule
     public static UIModule UI => _ui ??= UIModule.Instance;
 
     private static UIModule _ui;
+    
+    public static MvvmModule Mvvm => MvvmModule.Instance;
+    private static MvvmModule _mvvm;
 
     /// <summary>
     /// 获取场景模块。

@@ -20,6 +20,7 @@ using UnityFramework.Localization;
 public partial class GameApp
 {
     private static List<Assembly> _hotfixAssembly;
+    
 
     /// <summary>
     /// 热更域App主入口。
@@ -35,31 +36,15 @@ public partial class GameApp
         StartGameLogic();
     }
     
-    public static ApplicationContext ApplicationContext;
-    // private static ISubscription<BattleEventArgs> _battleSubscription;
-    
     /// <summary>
     /// 开始游戏业务层逻辑。
     /// <remarks>显示UI、加载场景等。</remarks>
     /// </summary>
     private static void StartGameLogic()
     {
-        InitMvvmModule();
-        ApplicationContext = Context.GetApplicationContext();
-        var container = ApplicationContext.GetContainer();
-        var bundle = new BindingServiceBundle(container);
-        bundle.Start();
-        IBattleRepository accountRepository = new BattleRepository();
-        container.Register<IBattleService>(new BattleService(accountRepository));
-        
+        MvvmModule.Instance.Init();
         UIModule.Instance.Active();
         StartBattleRoom().Forget();
-    }
-
-    private static void InitMvvmModule()
-    {
-        Context.OnInitialize();
-        UISynchronizationContext.OnInitialize();
     }
 
     private static async UniTaskVoid StartBattleRoom()
