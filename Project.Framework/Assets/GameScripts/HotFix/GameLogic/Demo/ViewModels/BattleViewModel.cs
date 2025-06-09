@@ -3,6 +3,7 @@ using GameLogic.Model;
 
 namespace GameLogic.ViewModel
 {
+    
     public class BattleViewModel : ViewModelBase
     {
         private BattleModel _battleModel;

@@ -5,8 +5,11 @@
     <br>
   <a style="text-decoration:none">
     <img src="https://img.shields.io/badge/Unity%20Ver-2022.3.57-blue.svg?style=flat-square" alt="status" />
-  </a> 
-      </a>
+  </a>   <a style="text-decoration:none">
+    <img src="https://img.shields.io/github/license/Neverland-XFX/Unity-Framework" alt="license" />
+  </a>   <a style="text-decoration:none">
+    <img src="https://img.shields.io/github/last-commit/Neverland-XFX/Unity-Framework" alt="last" />
+  </a>
 
 
 ### UnityFramework
@@ -15,7 +18,11 @@
 
 ##### 资源模块、对象池模块、UI模块的使用可参考<a href="https://github.com/Alex-Rachel/TEngine/blob/main/Books/99-%E5%90%84%E5%B9%B3%E5%8F%B0%E8%BF%90%E8%A1%8CRunAble.md"><strong>TEngine使用文档</strong></a>
 
+##### 已实现View模块和ViewModel模块的部分代码生成器
+
 ##### 使用起来极其方便且易扩展的unity-mvvm框架，具体使用可参考demo目录
+
+##### 下一步集成Goap进demo项目
 
 
 

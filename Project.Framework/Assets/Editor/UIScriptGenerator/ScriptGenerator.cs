@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
+using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEngine;
 
@@ -18,17 +19,225 @@ namespace UnityFramework.Editor.UI
             MvvmGenerateView();
         }
         
-        // [MenuItem("GameObject/ScriptGenerator/GeneratorViewModel", priority = 31)]
-        // public static void MemberViewModel()
-        // {
-        //     // MvvmGenerateViewModel();
-        // }
+        [MenuItem("GameObject/ScriptGenerator/GeneratorViewModel", priority = 31)]
+        public static void MemberViewModel()
+        {
+            MvvmGenerateViewModel();
+        }
         // [MenuItem("GameObject/ScriptGenerator/GeneratorModel", priority = 32)]
         // public static void MemberModel()
         // {
         //     // MvvmGenerateModel();
         // }
 
+        #region ViewModel
+
+        private static void MvvmGenerateViewModel()
+        {
+            var root = Selection.activeTransform;
+            if (root != null)
+            {
+                StringBuilder strVar = new StringBuilder();
+                StringBuilder str = new StringBuilder();
+                bool isContainViewModel = false;
+
+                List<string> properties = new List<string>();
+                
+                // MvvmErgodic(root, root, ref strVar, ref strBind,ref isContainViewModel);
+                StringBuilder strFile = new StringBuilder();
+
+                string className;
+#if ENABLE_TEXTMESHPRO
+                strFile.Append("using TMPro;\n");
+#endif
+                // if (isUniTask)
+                // {
+                //     strFile.Append("using Cysharp.Threading.Tasks;\n");
+                // }
+
+                strFile.Append("using UnityEngine;\n");
+                strFile.Append("using UnityEngine.UI;\n");
+                strFile.Append("using UnityFramework;\n\n");
+                strFile.Append($"namespace {ScriptGeneratorSetting.GetUINameSpace()}\n");
+                strFile.Append("{\n");
+                
+                var widgetPrefix = $"{(ScriptGeneratorSetting.GetCodeStyle() == UIFieldCodeStyle.MPrefix ? "m_" : "_")}{ScriptGeneratorSetting.GetWidgetName()}";
+                
+                if (root.name.StartsWith(widgetPrefix))
+                {
+                    className =  root.name.Replace(widgetPrefix, "").Replace("Widget","");
+                }
+                else
+                {
+                    className = root.name.Replace("Window","");
+                }
+                strFile.Append("\tclass " + className + "ViewModel" + " : ViewModelBase\n");
+                strFile.Append("\t{\n");
+                
+                string rootCamel = char.ToLower(className[0]) + className.Substring(1);
+                
+                
+                GetViewModelProperties(root, ref strVar, ref isContainViewModel,ref properties,rootCamel,className);
+                if (isContainViewModel)
+                {
+                    strFile.Append($"\t\tprivate {className}Model _{rootCamel}Model;\n\n");
+                }
+                
+                strFile.Append(strVar);
+
+                if (isContainViewModel)
+                {
+                    
+                    strFile.Append($"\t\tpublic {className}ViewModel()\n");
+                    strFile.Append("\t\t{\n");
+                    strFile.Append($"\t\t_{rootCamel}Model = new {className}Model();\n");
+                    strFile.Append($"\t\t_{rootCamel}Model.PropertyChanged += OnPropertyChanged;\n");
+                    strFile.Append("\t\t}\n");
+
+                    strFile.Append($"\t\tprivate void OnPropertyChanged(object sender, PropertyChangedEventArgs e)\n");
+                    strFile.Append("\t\t{\n");
+                    // foreach (var property in properties)
+                    // {
+                    //     strFile.Append($"\t\t\tif(e.PropertyName == nameof({property})\n");
+                    //     strFile.Append("\t\t\t{\n");
+                    //     strFile.Append($"\t\t\t\tGameModule.UI.ShowUIAsync<{property}Window>\n");
+                    // }
+                    strFile.Append($"\t\t\tRaisePropertyChanged(e.PropertyName);\n");
+                    strFile.Append("\t\t}\n");
+                    
+                    
+                    // strFile.Append($"\t\t_{rootCamel}ViewModel = new {className}ViewModel();\n");
+                    // strFile.Append($"\t\tBindingSet<{root.name}, {className}ViewModel> bindingSet = this.CreateBindingSet(_{rootCamel}ViewModel);\n");
+                    //
+                    // MvvmBind(root, root, ref strFile);
+                    // strFile.Append("\t\tbindingSet.Build();\n");
+                }
+
+                strFile.Append("\n\n");
+                strFile.Append("\t}\n");
+                strFile.Append("}\n");
+                
+                TextEditor te = new TextEditor();
+                te.text = strFile.ToString();
+                te.SelectAll();
+                te.Copy();
+            }
+
+            Debug.Log($"脚本已生成到剪贴板，请自行Ctl+V粘贴");
+        }
+
+        private static void GetViewModelProperties(Transform transform, ref StringBuilder strVar,
+            ref bool isContainViewModel, ref List<string> properties,string rootCamel, string className)
+        {
+            
+            for (int i = 0; i < transform.childCount; ++i)
+            {
+                Transform child = transform.GetChild(i);
+                
+                if (child.name.StartsWith("m_vm"))
+                {
+                    isContainViewModel = true;
+                }
+
+                MvvmViewModelWriteScript( child, ref strVar,ref properties,rootCamel, className);
+                if (child.name.StartsWith("m_item"))
+                {
+                    continue;
+                }
+
+                GetViewModelProperties( child, ref strVar,ref isContainViewModel,ref properties,rootCamel,className);
+            }
+        }
+        
+        
+        private static void MvvmViewModelWriteScript(Transform child, ref StringBuilder strVar,ref List<string> properties,
+            string rootCamel, string className)
+        {
+            string varName = child.name;
+            
+            string componentName = string.Empty;
+
+            var rule = ScriptGeneratorSetting.GetScriptGenerateRule().Find(t => varName.StartsWith(t.uiElementRegex));
+
+            if (rule != null)
+            {
+                componentName = rule.componentName;
+            }
+            
+            bool isUIWidget = rule is { isUIWidget: true };
+
+            if (componentName == string.Empty)
+            {
+                return;
+            }
+
+            var codeStyle = ScriptGeneratorSetting.Instance.CodeStyle;
+            if (codeStyle == UIFieldCodeStyle.UnderscorePrefix)
+            {
+                if (varName.StartsWith("_"))
+                {
+                    
+                }
+                else if(varName.StartsWith("m_vm"))
+                {
+                    varName = varName.Substring(4);
+                }
+                else
+                {
+                    varName = $"{varName}";
+                }
+            }
+            else if (codeStyle == UIFieldCodeStyle.MPrefix)
+            {
+                Log.Warning($"暂未支持");
+                // if (varName.StartsWith("m_"))
+                // {
+                //     
+                // }
+                // else if (varName.StartsWith("_"))
+                // {
+                //     varName = $"m{varName}";
+                // }
+                // else
+                // {
+                //     varName = $"m_{varName}";
+                // }
+            }
+
+            switch (componentName)
+            {
+                case "Text":
+                    componentName = "string";
+                    varName = varName.Replace("Text", "");
+                    break;
+                default:
+                    Log.Warning($"暂未支持");
+                    return;
+            }
+            
+            if (!string.IsNullOrEmpty(varName))
+            {
+                properties.Add(varName);
+                strVar.Append("\t\tpublic " + componentName + " " + varName + "\n");
+                strVar.Append("\t\t{\n");
+                strVar.Append($"\t\t\tget => _{rootCamel}Model.{varName};\n");
+                strVar.Append($"\t\t\tset\n");
+                strVar.Append("\t\t\t{\n");
+                strVar.Append($"\t\t\t\t_{rootCamel}Model.{varName} = value;\n");
+                strVar.Append($"\t\t\t\tRaisePropertyChanged(nameof({varName}));\n");
+                strVar.Append("\t\t\t}\n");
+                strVar.Append("\t\t}\n");
+            }
+        }
+
+
+        #endregion
+
+        #region View
+
+        
+
+        #endregion
         private static void MvvmGenerateView(bool isUniTask = false)
         {
             var root = Selection.activeTransform;
