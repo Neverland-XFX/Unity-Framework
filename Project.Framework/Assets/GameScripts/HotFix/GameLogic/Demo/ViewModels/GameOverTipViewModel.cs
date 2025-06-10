@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using Cysharp.Threading.Tasks;
 using GameLogic.Commands;
+// using GameLogic.GoapModule.Demo;
 using GameLogic.Model;
 
 namespace GameLogic.ViewModel
@@ -40,7 +41,7 @@ namespace GameLogic.ViewModel
 
         private void GoHome()
         {
-            
+            // RunDemoMain.GoapDemo.RunDemo();
         }
     }
 }

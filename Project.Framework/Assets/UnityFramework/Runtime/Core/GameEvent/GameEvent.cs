@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Threading;
 
 namespace UnityFramework
@@ -19,8 +20,8 @@ namespace UnityFramework
         /// </summary>
         public static EventMgr EventMgr => _eventMgr;
 
-        private static readonly ConcurrentDictionary<Type, SubjectBase> notifiers = new ConcurrentDictionary<Type, SubjectBase>();
-        private static readonly ConcurrentDictionary<string, ConcurrentDictionary<Type, SubjectBase>> channelNotifiers = new ConcurrentDictionary<string, ConcurrentDictionary<Type, SubjectBase>>();
+        private static readonly ConcurrentDictionary<Type, SubjectBase> Notifiers = new ConcurrentDictionary<Type, SubjectBase>();
+        private static readonly ConcurrentDictionary<string, ConcurrentDictionary<Type, SubjectBase>> ChannelNotifiers = new ConcurrentDictionary<string, ConcurrentDictionary<Type, SubjectBase>>();
 
         #region 消息分发
         /// <summary>
@@ -32,14 +33,13 @@ namespace UnityFramework
         /// if the disposable object is disposed,the message is automatically unsubscribed.</returns>
         public static ISubscription<object> Subscribe(Type type, Action<object> action)
         {
-            SubjectBase notifier;
-            if (!notifiers.TryGetValue(type, out notifier))
+            if (!Notifiers.TryGetValue(type, out var notifier))
             {
                 notifier = new Subject<object>();
-                if (!notifiers.TryAdd(type, notifier))
-                    notifiers.TryGetValue(type, out notifier);
+                if (!Notifiers.TryAdd(type, notifier))
+                    Notifiers.TryGetValue(type, out notifier);
             }
-            return (notifier as Subject<object>).Subscribe(action);
+            return (notifier as Subject<object>)?.Subscribe(action);
         }
 
         /// <summary>
@@ -52,14 +52,13 @@ namespace UnityFramework
         public static ISubscription<T> Subscribe<T>(Action<T> action)
         {
             Type type = typeof(T);
-            SubjectBase notifier;
-            if (!notifiers.TryGetValue(type, out notifier))
+            if (!Notifiers.TryGetValue(type, out var notifier))
             {
                 notifier = new Subject<T>();
-                if (!notifiers.TryAdd(type, notifier))
-                    notifiers.TryGetValue(type, out notifier);
+                if (!Notifiers.TryAdd(type, notifier))
+                    Notifiers.TryGetValue(type, out notifier);
             }
-            return (notifier as Subject<T>).Subscribe(action);
+            return (notifier as Subject<T>)?.Subscribe(action);
         }
 
         /// <summary>
@@ -76,41 +75,37 @@ namespace UnityFramework
         /// if the disposable object is disposed,the message is automatically unsubscribed.</returns>
         public static ISubscription<object> Subscribe(string channel, Type type, Action<object> action)
         {
-            SubjectBase notifier = null;
-            ConcurrentDictionary<Type, SubjectBase> dict = null;
-            if (!channelNotifiers.TryGetValue(channel, out dict))
+            if (!ChannelNotifiers.TryGetValue(channel, out var dict))
             {
                 dict = new ConcurrentDictionary<Type, SubjectBase>();
-                if (!channelNotifiers.TryAdd(channel, dict))
-                    channelNotifiers.TryGetValue(channel, out dict);
+                if (!ChannelNotifiers.TryAdd(channel, dict))
+                    ChannelNotifiers.TryGetValue(channel, out dict);
             }
 
-            if (!dict.TryGetValue(type, out notifier))
+            if (!dict.TryGetValue(type, out var notifier))
             {
                 notifier = new Subject<object>();
                 if (!dict.TryAdd(type, notifier))
                     dict.TryGetValue(type, out notifier);
             }
-            return (notifier as Subject<object>).Subscribe(action);
+            return (notifier as Subject<object>)?.Subscribe(action);
         }
         public static ISubscription<T> Subscribe<T>(string channel, Action<T> action)
         {
-            SubjectBase notifier = null;
-            ConcurrentDictionary<Type, SubjectBase> dict = null;
-            if (!channelNotifiers.TryGetValue(channel, out dict))
+            if (!ChannelNotifiers.TryGetValue(channel, out var dict))
             {
                 dict = new ConcurrentDictionary<Type, SubjectBase>();
-                if (!channelNotifiers.TryAdd(channel, dict))
-                    channelNotifiers.TryGetValue(channel, out dict);
+                if (!ChannelNotifiers.TryAdd(channel, dict))
+                    ChannelNotifiers.TryGetValue(channel, out dict);
             }
 
-            if (!dict.TryGetValue(typeof(T), out notifier))
+            if (!dict.TryGetValue(typeof(T), out var notifier))
             {
                 notifier = new Subject<T>();
                 if (!dict.TryAdd(typeof(T), notifier))
                     dict.TryGetValue(typeof(T), out notifier);
             }
-            return (notifier as Subject<T>).Subscribe(action);
+            return (notifier as Subject<T>)?.Subscribe(action);
         }
         
         /// <summary>
@@ -124,11 +119,11 @@ namespace UnityFramework
 
         public static void Publish<T>(T message)
         {
-            if (message == null || notifiers.Count <= 0)
+            if (message == null || Notifiers.Count <= 0)
                 return;
 
             Type messageType = message.GetType();
-            foreach (var kv in notifiers)
+            foreach (var kv in Notifiers)
             {
                 if (kv.Key.IsAssignableFrom(messageType))
                     kv.Value.Publish(message);
@@ -166,7 +161,7 @@ namespace UnityFramework
                 return;
 
             ConcurrentDictionary<Type, SubjectBase> dict = null;
-            if (!channelNotifiers.TryGetValue(channel, out dict) || dict.Count <= 0)
+            if (!ChannelNotifiers.TryGetValue(channel, out dict) || dict.Count <= 0)
                 return;
 
             Type messageType = message.GetType();
@@ -768,8 +763,8 @@ namespace UnityFramework
 
     public class Subject<T> : SubjectBase
     {
-        private readonly ConcurrentDictionary<string, WeakReference<Subscription>> subscriptions = new ConcurrentDictionary<string, WeakReference<Subscription>>();
-        public bool IsEmpty() { return subscriptions.Count <= 0; }
+        private readonly ConcurrentDictionary<string, WeakReference<Subscription>> _subscriptions = new ConcurrentDictionary<string, WeakReference<Subscription>>();
+        public bool IsEmpty() { return _subscriptions.Count <= 0; }
 
         public override void Publish(object message)
         {
@@ -778,17 +773,17 @@ namespace UnityFramework
 
         public void Publish(T message)
         {
-            if (subscriptions.Count <= 0)
+            if (_subscriptions.Count <= 0)
                 return;
 
-            foreach (var kv in subscriptions)
+            foreach (var kv in _subscriptions)
             {
                 Subscription subscription;
                 kv.Value.TryGetTarget(out subscription);
                 if (subscription != null)
                     subscription.Publish(message);
                 else
-                    subscriptions.TryRemove(kv.Key, out _);
+                    _subscriptions.TryRemove(kv.Key, out _);
             }
         }
 
@@ -800,37 +795,37 @@ namespace UnityFramework
         void Add(Subscription subscription)
         {
             var reference = new WeakReference<Subscription>(subscription, false);
-            this.subscriptions.TryAdd(subscription.Key, reference);
+            this._subscriptions.TryAdd(subscription.Key, reference);
         }
 
         void Remove(Subscription subscription)
         {
-            this.subscriptions.TryRemove(subscription.Key, out _);
+            this._subscriptions.TryRemove(subscription.Key, out _);
         }
 
         class Subscription : ISubscription<T>
         {
-            private Subject<T> subject;
-            private Action<T> action;
-            private SynchronizationContext context;
+            private Subject<T> _subject;
+            private Action<T> _action;
+            private SynchronizationContext _context;
             public string Key { get; private set; }
 
             public Subscription(Subject<T> subject, Action<T> action)
             {
-                this.subject = subject;
-                this.action = action;
+                this._subject = subject;
+                this._action = action;
                 this.Key = Guid.NewGuid().ToString();
-                this.subject.Add(this);
+                this._subject.Add(this);
             }
 
             public void Publish(T message)
             {
                 try
                 {
-                    if (this.context != null)
-                        context.Post(state => action?.Invoke((T)state), message);
+                    if (this._context != null)
+                        _context.Post(state => _action?.Invoke((T)state), message);
                     else
-                        action?.Invoke(message);
+                        _action?.Invoke(message);
                 }
                 catch (Exception e)
                 {
@@ -840,22 +835,22 @@ namespace UnityFramework
 
             public ISubscription<T> ObserveOn(SynchronizationContext context)
             {
-                this.context = context ?? throw new ArgumentNullException("context");
+                this._context = context ?? throw new ArgumentNullException(nameof(context));
                 return this;
             }
 
             #region IDisposable Support
-            private int disposed = 0;
+            private int _disposed = 0;
 
             protected virtual void Dispose(bool disposing)
             {
                 try
                 {
 #if UNITY_WEBGL
-                    if (this.disposed==1)
+                    if (this._disposed==1)
                         return;
 
-                    disposed = 1;
+                    _disposed = 1;
                     if (subject != null)
                         subject.Remove(this);
 
@@ -863,18 +858,21 @@ namespace UnityFramework
                     action = null;
                     subject = null;
 #else
-                    if (Interlocked.CompareExchange(ref this.disposed, 1, 0) == 0)
+                    if (Interlocked.CompareExchange(ref this._disposed, 1, 0) == 0)
                     {
-                        if (subject != null)
-                            subject.Remove(this);
+                        if (_subject != null)
+                            _subject.Remove(this);
 
-                        context = null;
-                        action = null;
-                        subject = null;
+                        _context = null;
+                        _action = null;
+                        _subject = null;
                     }
 #endif
                 }
-                catch (Exception) { }
+                catch (Exception)
+                {
+                    // ignored
+                }
             }
 
             ~Subscription()
@@ -896,8 +894,8 @@ namespace UnityFramework
         /// For example, sending a message to the UI thread for execution.
         /// </summary>
         /// <example>
-        /// <code>
-        /// messenger.Subscribe<Message>(m=>{}).ObserveOn(SynchronizationContext.Current);
+        /// <code Message="(m=&gt;{}).ObserveOn(SynchronizationContext.Current);">
+        /// messenger.Subscribe
         /// </code>
         /// </example>
         /// <param name="context"></param>

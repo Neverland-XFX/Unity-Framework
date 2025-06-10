@@ -6,28 +6,28 @@ namespace GameLogic.Binding
 {
 public abstract class AbstractBinding : IBinding
     {
-        private IBindingContext bindingContext;
-        private WeakReference target;
-        private object dataContext;
+        private IBindingContext _bindingContext;
+        private WeakReference _target;
+        private object _dataContext;
 
-        public AbstractBinding(IBindingContext bindingContext, object dataContext, object target)
+        protected AbstractBinding(IBindingContext bindingContext, object dataContext, object target)
         {
-            this.bindingContext = bindingContext;
-            this.target = new WeakReference(target, false);
-            this.dataContext = dataContext;
+            _bindingContext = bindingContext;
+            _target = new WeakReference(target, false);
+            _dataContext = dataContext;
         }
 
         public virtual IBindingContext BindingContext
         {
-            get { return this.bindingContext; }
-            set { this.bindingContext = value; }
+            get => _bindingContext;
+            set => _bindingContext = value;
         }
 
         public virtual object Target
         {
             get
             {
-                var target = this.target != null ? this.target.Target : null;
+                var target = this._target?.Target;
                 return IsAlive(target) ? target : null;
             }
         }
@@ -61,14 +61,14 @@ public abstract class AbstractBinding : IBinding
 
         public virtual object DataContext
         {
-            get { return this.dataContext; }
+            get => _dataContext;
             set
             {
-                if (this.dataContext == value)
+                if (_dataContext == value)
                     return;
 
-                this.dataContext = value;
-                this.OnDataContextChanged();
+                _dataContext = value;
+                OnDataContextChanged();
             }
         }
 
@@ -78,9 +78,9 @@ public abstract class AbstractBinding : IBinding
 
         protected virtual void Dispose(bool disposing)
         {
-            this.bindingContext = null;
-            this.dataContext = null;
-            this.target = null;
+            this._bindingContext = null;
+            this._dataContext = null;
+            this._target = null;
         }
 
         ~AbstractBinding()

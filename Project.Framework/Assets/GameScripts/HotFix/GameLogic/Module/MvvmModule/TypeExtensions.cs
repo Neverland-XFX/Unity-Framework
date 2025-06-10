@@ -6,8 +6,6 @@ namespace GameLogic
 {
     public static class TypeExtensions
     {
-        //private static readonly ILog log = LogManager.GetLogger(typeof(TypeExtensions));
-
         public static bool IsSubclassOfGenericTypeDefinition(this Type type, Type genericTypeDefinition)
         {
 #if NETFX_CORE

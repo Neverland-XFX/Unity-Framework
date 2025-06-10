@@ -5,60 +5,36 @@ namespace GameLogic.Asynchronous
 {
 public interface ICallbackable
     {
-        /// <summary>
-        /// Called when the task is finished.
-        /// </summary>
-        /// <param name="callback"></param>
         void OnCallback(Action<IAsyncResult> callback);
     }
 
     public interface ICallbackable<TResult>
     {
-        /// <summary>
-        /// Called when the task is finished.
-        /// </summary>
-        /// <param name="callback"></param>
         void OnCallback(Action<IAsyncResult<TResult>> callback);
     }
 
     public interface IProgressCallbackable<TProgress>
     {
-        /// <summary>
-        /// Called when the task is finished.
-        /// </summary>
-        /// <param name="callback"></param>
         void OnCallback(Action<IProgressResult<TProgress>> callback);
 
-        /// <summary>
-        /// Called when the progress update.
-        /// </summary>
-        /// <param name="callback"></param>
         void OnProgressCallback(Action<TProgress> callback);
     }
 
     public interface IProgressCallbackable<TProgress, TResult>
     {
-        /// <summary>
-        /// Called when the task is finished.
-        /// </summary>
-        /// <param name="callback"></param>
         void OnCallback(Action<IProgressResult<TProgress, TResult>> callback);
 
-        /// <summary>
-        /// Called when the progress update.
-        /// </summary>
-        /// <param name="callback"></param>
         void OnProgressCallback(Action<TProgress> callback);
     }
 
     internal class Callbackable : ICallbackable
     {
-        private IAsyncResult result;
+        private readonly IAsyncResult _result;
         private readonly object _lock = new object();
-        private Action<IAsyncResult> callback;
+        private Action<IAsyncResult> _callback;
         public Callbackable(IAsyncResult result)
         {
-            this.result = result;
+            this._result = result;
         }
 
         public void RaiseOnCallback()
@@ -67,17 +43,18 @@ public interface ICallbackable
             {
                 try
                 {
-                    if (this.callback == null)
+                    if (this._callback == null)
                         return;
 
-                    var list = this.callback.GetInvocationList();
-                    this.callback = null;
+                    var list = this._callback.GetInvocationList();
+                    this._callback = null;
 
-                    foreach (Action<IAsyncResult> action in list)
+                    foreach (var @delegate in list)
                     {
+                        var action = (Action<IAsyncResult>)@delegate;
                         try
                         {
-                            action(this.result);
+                            action(this._result);
                         }
                         catch (Exception e)
                         {
@@ -99,11 +76,11 @@ public interface ICallbackable
                 if (callback == null)
                     return;
 
-                if (this.result.IsDone)
+                if (this._result.IsDone)
                 {
                     try
                     {
-                        callback(this.result);
+                        callback(this._result);
                     }
                     catch (Exception e)
                     {
@@ -112,19 +89,19 @@ public interface ICallbackable
                     return;
                 }
 
-                this.callback += callback;
+                this._callback += callback;
             }
         }
     }
 
     internal class Callbackable<TResult> : ICallbackable<TResult>
     {
-        private IAsyncResult<TResult> result;
+        private readonly IAsyncResult<TResult> _result;
         private readonly object _lock = new object();
-        private Action<IAsyncResult<TResult>> callback;
+        private Action<IAsyncResult<TResult>> _callback;
         public Callbackable(IAsyncResult<TResult> result)
         {
-            this.result = result;
+            this._result = result;
         }
 
         public void RaiseOnCallback()
@@ -133,17 +110,18 @@ public interface ICallbackable
             {
                 try
                 {
-                    if (this.callback == null)
+                    if (this._callback == null)
                         return;
 
-                    var list = this.callback.GetInvocationList();
-                    this.callback = null;
+                    var list = this._callback.GetInvocationList();
+                    this._callback = null;
 
-                    foreach (Action<IAsyncResult<TResult>> action in list)
+                    foreach (var @delegate in list)
                     {
+                        var action = (Action<IAsyncResult<TResult>>)@delegate;
                         try
                         {
-                            action(this.result);
+                            action(this._result);
                         }
                         catch (Exception e)
                         {
@@ -165,11 +143,11 @@ public interface ICallbackable
                 if (callback == null)
                     return;
 
-                if (this.result.IsDone)
+                if (this._result.IsDone)
                 {
                     try
                     {
-                        callback(this.result);
+                        callback(this._result);
                     }
                     catch (Exception e)
                     {
@@ -178,20 +156,20 @@ public interface ICallbackable
                     return;
                 }
 
-                this.callback += callback;
+                this._callback += callback;
             }
         }
     }
 
     internal class ProgressCallbackable<TProgress> : IProgressCallbackable<TProgress>
     {
-        private IProgressResult<TProgress> result;
+        private readonly IProgressResult<TProgress> _result;
         private readonly object _lock = new object();
-        private Action<IProgressResult<TProgress>> callback;
-        private Action<TProgress> progressCallback;
+        private Action<IProgressResult<TProgress>> _callback;
+        private Action<TProgress> _progressCallback;
         public ProgressCallbackable(IProgressResult<TProgress> result)
         {
-            this.result = result;
+            this._result = result;
         }
 
         public void RaiseOnCallback()
@@ -200,17 +178,18 @@ public interface ICallbackable
             {
                 try
                 {
-                    if (this.callback == null)
+                    if (this._callback == null)
                         return;
 
-                    var list = this.callback.GetInvocationList();
-                    this.callback = null;
+                    var list = this._callback.GetInvocationList();
+                    this._callback = null;
 
-                    foreach (Action<IProgressResult<TProgress>> action in list)
+                    foreach (var @delegate in list)
                     {
+                        var action = (Action<IProgressResult<TProgress>>)@delegate;
                         try
                         {
-                            action(this.result);
+                            action(this._result);
                         }
                         catch (Exception e)
                         {
@@ -224,7 +203,7 @@ public interface ICallbackable
                 }
                 finally
                 {
-                    this.progressCallback = null;
+                    this._progressCallback = null;
                 }
             }
         }
@@ -235,12 +214,13 @@ public interface ICallbackable
             {
                 try
                 {
-                    if (this.progressCallback == null)
+                    if (this._progressCallback == null)
                         return;
 
-                    var list = this.progressCallback.GetInvocationList();
-                    foreach (Action<TProgress> action in list)
+                    var list = this._progressCallback.GetInvocationList();
+                    foreach (var @delegate in list)
                     {
+                        var action = (Action<TProgress>)@delegate;
                         try
                         {
                             action(progress);
@@ -265,11 +245,11 @@ public interface ICallbackable
                 if (callback == null)
                     return;
 
-                if (this.result.IsDone)
+                if (this._result.IsDone)
                 {
                     try
                     {
-                        callback(this.result);
+                        callback(this._result);
                     }
                     catch (Exception e)
                     {
@@ -278,7 +258,7 @@ public interface ICallbackable
                     return;
                 }
 
-                this.callback += callback;
+                this._callback += callback;
             }
         }
 
@@ -289,11 +269,11 @@ public interface ICallbackable
                 if (callback == null)
                     return;
 
-                if (this.result.IsDone)
+                if (this._result.IsDone)
                 {
                     try
                     {
-                        callback(this.result.Progress);
+                        callback(this._result.Progress);
                     }
                     catch (Exception e)
                     {
@@ -302,20 +282,20 @@ public interface ICallbackable
                     return;
                 }
 
-                this.progressCallback += callback;
+                this._progressCallback += callback;
             }
         }
     }
 
     internal class ProgressCallbackable<TProgress, TResult> : IProgressCallbackable<TProgress, TResult>
     {
-        private IProgressResult<TProgress, TResult> result;
+        private readonly IProgressResult<TProgress, TResult> _result;
         private readonly object _lock = new object();
-        private Action<IProgressResult<TProgress, TResult>> callback;
-        private Action<TProgress> progressCallback;
+        private Action<IProgressResult<TProgress, TResult>> _callback;
+        private Action<TProgress> _progressCallback;
         public ProgressCallbackable(IProgressResult<TProgress, TResult> result)
         {
-            this.result = result;
+            this._result = result;
         }
 
         public void RaiseOnCallback()
@@ -324,17 +304,18 @@ public interface ICallbackable
             {
                 try
                 {
-                    if (this.callback == null)
+                    if (this._callback == null)
                         return;
 
-                    var list = this.callback.GetInvocationList();
-                    this.callback = null;
+                    var list = this._callback.GetInvocationList();
+                    this._callback = null;
 
-                    foreach (Action<IProgressResult<TProgress, TResult>> action in list)
+                    foreach (var @delegate in list)
                     {
+                        var action = (Action<IProgressResult<TProgress, TResult>>)@delegate;
                         try
                         {
-                            action(this.result);
+                            action(this._result);
                         }
                         catch (Exception e)
                         {
@@ -348,7 +329,7 @@ public interface ICallbackable
                 }
                 finally
                 {
-                    this.progressCallback = null;
+                    this._progressCallback = null;
                 }
             }
         }
@@ -359,12 +340,13 @@ public interface ICallbackable
             {
                 try
                 {
-                    if (this.progressCallback == null)
+                    if (this._progressCallback == null)
                         return;
 
-                    var list = this.progressCallback.GetInvocationList();
-                    foreach (Action<TProgress> action in list)
+                    var list = this._progressCallback.GetInvocationList();
+                    foreach (var @delegate in list)
                     {
+                        var action = (Action<TProgress>)@delegate;
                         try
                         {
                             action(progress);
@@ -389,11 +371,11 @@ public interface ICallbackable
                 if (callback == null)
                     return;
 
-                if (this.result.IsDone)
+                if (this._result.IsDone)
                 {
                     try
                     {
-                        callback(this.result);
+                        callback(this._result);
                     }
                     catch (Exception e)
                     {
@@ -402,7 +384,7 @@ public interface ICallbackable
                     return;
                 }
 
-                this.callback += callback;
+                this._callback += callback;
             }
         }
 
@@ -413,11 +395,11 @@ public interface ICallbackable
                 if (callback == null)
                     return;
 
-                if (this.result.IsDone)
+                if (this._result.IsDone)
                 {
                     try
                     {
-                        callback(this.result.Progress);
+                        callback(this._result.Progress);
                     }
                     catch (Exception e)
                     {
@@ -426,7 +408,7 @@ public interface ICallbackable
                     return;
                 }
 
-                this.progressCallback += callback;
+                this._progressCallback += callback;
             }
         }
     }

@@ -16,8 +16,6 @@ namespace GameLogic.Binding.Builder
 {
     public class BindingBuilder<TTarget, TSource> : BindingBuilderBase where TTarget : class
     {
-        //private static readonly ILog log = LogManager.GetLogger(typeof(BindingBuilder<TTarget, TSource>));
-
         public BindingBuilder(IBindingContext context, TTarget target) : base(context, target)
         {
             this.description.TargetType = typeof(TTarget);
@@ -440,8 +438,6 @@ namespace GameLogic.Binding.Builder
 
     public class BindingBuilder<TTarget> : BindingBuilderBase where TTarget : class
     {
-        //private static readonly ILog log = LogManager.GetLogger(typeof(BindingBuilder<TTarget>));
-
         public BindingBuilder(IBindingContext context, TTarget target) : base(context, target)
         {
             this.description.TargetType = typeof(TTarget);
@@ -599,8 +595,6 @@ namespace GameLogic.Binding.Builder
 
     public class BindingBuilder : BindingBuilderBase
     {
-        //private static readonly ILog log = LogManager.GetLogger(typeof(BindingBuilder));
-
         public BindingBuilder(IBindingContext context, object target) : base(context, target)
         {
         }

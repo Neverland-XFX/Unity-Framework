@@ -6,70 +6,41 @@ namespace GameLogic.Asynchronous
 {
 public class AsyncResult : IAsyncResult, IPromise
     {
-        //private static readonly ILog log = LogManager.GetLogger(typeof(AsyncResult));
+        private bool _done = false;
+        private object _result = null;
+        private Exception _exception = null;
 
-        private bool done = false;
-        private object result = null;
-        private Exception exception = null;
+        private bool _cancelled = false;
+        private readonly bool _cancelable = false;
+        private bool _cancellationRequested;
 
-        private bool cancelled = false;
-        protected bool cancelable = false;
-        protected bool cancellationRequested;
+        protected readonly object Lock = new object();
 
-        protected readonly object _lock = new object();
-
-        private Synchronizable synchronizable;
-        private Callbackable callbackable;
+        private Synchronizable _synchronizable;
+        private Callbackable _callbackable;
 
         public AsyncResult() : this(false)
         {
         }
 
-        public AsyncResult(bool cancelable)
+        protected AsyncResult(bool cancelable)
         {
-            this.cancelable = cancelable;
+            _cancelable = cancelable;
         }
 
-        /// <summary>
-        /// Exception
-        /// </summary>
-        public virtual Exception Exception
-        {
-            get { return this.exception; }
-        }
+        public virtual Exception Exception => _exception;
 
-        /// <summary>
-        /// Returns  "true" if this task finished.
-        /// </summary>
-        public virtual bool IsDone
-        {
-            get { return this.done; }
-        }
+        public virtual bool IsDone => _done;
 
-        /// <summary>
-        /// The execution result
-        /// </summary>
-        public virtual object Result
-        {
-            get { return this.result; }
-        }
+        public virtual object Result => _result;
 
-        public virtual bool IsCancellationRequested
-        {
-            get { return this.cancellationRequested; }
-        }
+        public virtual bool IsCancellationRequested => _cancellationRequested;
 
-        /// <summary>
-        /// Returns "true" if this task was cancelled before it completed normally.
-        /// </summary>
-        public virtual bool IsCancelled
-        {
-            get { return this.cancelled; }
-        }
+        public virtual bool IsCancelled => _cancelled;
 
         public virtual void SetException(string error)
         {
-            if (this.done)
+            if (_done)
                 return;
 
             var exception = new Exception(string.IsNullOrEmpty(error) ? "unknown error!" : error);
@@ -78,111 +49,93 @@ public class AsyncResult : IAsyncResult, IPromise
 
         public virtual void SetException(Exception exception)
         {
-            lock (_lock)
+            lock (Lock)
             {
-                if (this.done)
+                if (_done)
                     return;
 
-                this.exception = exception;
-                this.done = true;
-                Monitor.PulseAll(_lock);
+                _exception = exception;
+                _done = true;
+                Monitor.PulseAll(Lock);
             }
 
-            this.RaiseOnCallback();
+            RaiseOnCallback();
         }
 
         public virtual void SetResult(object result = null)
         {
-            lock (_lock)
+            lock (Lock)
             {
-                if (this.done)
+                if (_done)
                     return;
 
-                this.result = result;
-                this.done = true;
-                Monitor.PulseAll(_lock);
+                _result = result;
+                _done = true;
+                Monitor.PulseAll(Lock);
             }
 
-            this.RaiseOnCallback();
+            RaiseOnCallback();
         }
 
         public virtual void SetCancelled()
         {
-            lock (_lock)
+            lock (Lock)
             {
-                if (!this.cancelable || this.done)
+                if (!_cancelable || _done)
                     return;
 
-                this.cancelled = true;
-                this.exception = new OperationCanceledException();
-                this.done = true;
-                Monitor.PulseAll(_lock);
+                _cancelled = true;
+                _exception = new OperationCanceledException();
+                _done = true;
+                Monitor.PulseAll(Lock);
             }
 
-            this.RaiseOnCallback();
+            RaiseOnCallback();
         }
 
-        /// <summary>
-        /// Attempts to cancel execution of this task.  This attempt will 
-        /// fail if the task has already completed, has already been cancelled,
-        /// or could not be cancelled for some other reason.If successful,
-        /// and this task has not started when "Cancel" is called,
-        /// this task should never run. 
-        /// </summary>
-        /// <exception cref="NotSupportedException">If not supported, throw an exception.</exception>
-        /// <returns></returns>
         public virtual bool Cancel()
         {
-            if (!this.cancelable)
+            if (!_cancelable)
                 throw new NotSupportedException();
 
-            if (this.IsDone)
+            if (IsDone)
                 return false;
 
-            this.cancellationRequested = true;
-            this.SetCancelled();
+            _cancellationRequested = true;
+            SetCancelled();
             return true;
         }
 
         protected virtual void RaiseOnCallback()
         {
-            if (this.callbackable != null)
-                this.callbackable.RaiseOnCallback();
+            if (_callbackable != null)
+                _callbackable.RaiseOnCallback();
         }
 
         public virtual ICallbackable Callbackable()
         {
-            lock (_lock)
+            lock (Lock)
             {
-                return this.callbackable ?? (this.callbackable = new Callbackable(this));
+                return _callbackable ??= new Callbackable(this);
             }
         }
 
         public virtual ISynchronizable Synchronized()
         {
-            lock (_lock)
+            lock (Lock)
             {
-                return this.synchronizable ?? (this.synchronizable = new Synchronizable(this, this._lock));
+                return _synchronizable ??= new Synchronizable(this, Lock);
             }
         }
 
-        /// <summary>
-        /// Wait for the result,suspends the coroutine.
-        /// eg:
-        /// IAsyncResult result;
-        /// yiled return result.WaitForDone();
-        /// </summary>
-        /// <returns></returns>
         public virtual object WaitForDone()
         {
             return Executors.WaitWhile(() => !IsDone);
         }
     }
 
-    public class AsyncResult<TResult> : AsyncResult, IAsyncResult<TResult>, IPromise<TResult>
+    public sealed class AsyncResult<TResult> : AsyncResult, IAsyncResult<TResult>, IPromise<TResult>
     {
-        //private static readonly ILog log = LogManager.GetLogger(typeof(AsyncResult<TResult>));
-
         private Synchronizable<TResult> synchronizable;
         private Callbackable<TResult> callbackable;
 
@@ -190,14 +143,14 @@ public class AsyncResult : IAsyncResult, IPromise
         {
         }
 
-        public AsyncResult(bool cancelable) : base(cancelable)
+        private AsyncResult(bool cancelable) : base(cancelable)
         {
         }
 
         /// <summary>
         /// The execution result
         /// </summary>
-        public virtual new TResult Result
+        public new TResult Result
         {
             get
             {
@@ -206,7 +159,7 @@ public class AsyncResult : IAsyncResult, IPromise
             }
         }
 
-        public virtual void SetResult(TResult result)
+        public void SetResult(TResult result)
         {
             base.SetResult(result);
         }
@@ -214,23 +167,22 @@ public class AsyncResult : IAsyncResult, IPromise
         protected override void RaiseOnCallback()
         {
             base.RaiseOnCallback();
-            if (this.callbackable != null)
-                this.callbackable.RaiseOnCallback();
+            callbackable?.RaiseOnCallback();
         }
 
-        public new virtual ICallbackable<TResult> Callbackable()
+        public new ICallbackable<TResult> Callbackable()
         {
-            lock (_lock)
+            lock (Lock)
             {
-                return this.callbackable ?? (this.callbackable = new Callbackable<TResult>(this));
+                return callbackable ??= new Callbackable<TResult>(this);
             }
         }
 
-        public new virtual ISynchronizable<TResult> Synchronized()
+        public new ISynchronizable<TResult> Synchronized()
         {
-            lock (_lock)
+            lock (Lock)
             {
-                return this.synchronizable ?? (this.synchronizable = new Synchronizable<TResult>(this, this._lock));
+                return synchronizable ??= new Synchronizable<TResult>(this, Lock);
             }
         }
     }
