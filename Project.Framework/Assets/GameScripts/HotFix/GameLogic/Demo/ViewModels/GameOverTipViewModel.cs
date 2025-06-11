@@ -1,29 +1,33 @@
 ﻿using System.ComponentModel;
 using Cysharp.Threading.Tasks;
 using GameLogic.Commands;
-// using GameLogic.GoapModule.Demo;
+using GameLogic.GoapModule.Demo;
 using GameLogic.Model;
+using UnityFramework;
 
 namespace GameLogic.ViewModel
 {
     public class GameOverTipViewModel : ViewModelBase
     {
         
-        private SimpleCommand _homeCommand;
+        private SimpleCommand<string> _homeCommand;
         private SimpleCommand _resetCommand;
+        private SimpleCommand<string> _testCommand;
         private GameOverTipModel _gameOverTipModel;
         
         public ICommand HomeCommand => _homeCommand;
         public ICommand RestartCommand => _resetCommand;
+        public ICommand<string> TestCommand => _testCommand;
 
         public GameOverTipViewModel() 
         {
-            _homeCommand = new SimpleCommand(GoHome);
+            _homeCommand = new SimpleCommand<string>(GoHome);
             _resetCommand = new SimpleCommand(UniTask.UnityAction(Reset));
             _gameOverTipModel = new GameOverTipModel();
             _gameOverTipModel.PropertyChanged += OnPropertyChanged;
         }
-        
+
+
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             RaisePropertyChanged(e.PropertyName);
@@ -39,9 +43,9 @@ namespace GameLogic.ViewModel
             GameModule.UI.CloseUI<GameOverTipWindow>();
         }
 
-        private void GoHome()
+        private void GoHome(string value)
         {
-            // RunDemoMain.GoapDemo.RunDemo();
+            Log.Debug("GoHome", value);
         }
     }
 }

@@ -21,13 +21,14 @@ namespace GameLogic
             _vmBtnHome = FindChildComponent<Button>("m_goOverView/m_vmBtnHome");
         }
         #endregion
+        
         protected override void OnCreate()
         {
             base.OnCreate();
             _gameOverTipViewModel = new GameOverTipViewModel();
             BindingSet<GameOverTipWindow, GameOverTipViewModel> bindingSet = this.CreateBindingSet(_gameOverTipViewModel);
             bindingSet.Bind(_vmBtnRestart).From(v => v.onClick).To(vm => vm.RestartCommand);
-            bindingSet.Bind(_vmBtnHome).From(v => v.onClick).To(vm => vm.HomeCommand);
+            bindingSet.Bind(_vmBtnHome).From(v => v.onClick).To(vm => vm.HomeCommand).CommandParameter(_vmBtnHome.name);
             bindingSet.Build();
         }
 

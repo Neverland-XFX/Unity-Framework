@@ -6,29 +6,29 @@ namespace GameLogic.Binding
 {
     public class BindingFactory : IBindingFactory
     {
-        private ISourceProxyFactory sourceProxyFactory;
-        private ITargetProxyFactory targetProxyFactory;
+        private ISourceProxyFactory _sourceProxyFactory;
+        private ITargetProxyFactory _targetProxyFactory;
 
         public ISourceProxyFactory SourceProxyFactory
         {
-            get { return this.sourceProxyFactory; }
-            set { this.sourceProxyFactory = value; }
+            get => _sourceProxyFactory;
+            set => _sourceProxyFactory = value;
         }
         public ITargetProxyFactory TargetProxyFactory
         {
-            get { return this.targetProxyFactory; }
-            set { this.targetProxyFactory = value; }
+            get => _targetProxyFactory;
+            set => _targetProxyFactory = value;
         }
 
         public BindingFactory(ISourceProxyFactory sourceProxyFactory, ITargetProxyFactory targetProxyFactory)
         {
-            this.sourceProxyFactory = sourceProxyFactory;
-            this.targetProxyFactory = targetProxyFactory;
+            this._sourceProxyFactory = sourceProxyFactory;
+            this._targetProxyFactory = targetProxyFactory;
         }
 
         public IBinding Create(IBindingContext bindingContext, object source, object target, BindingDescription bindingDescription)
         {
-            return new Binding(bindingContext, source, target, bindingDescription, this.sourceProxyFactory, this.targetProxyFactory);
+            return new Binding(bindingContext, source, target, bindingDescription, this._sourceProxyFactory, this._targetProxyFactory);
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿
-
-using GameLogic.Binding.Binders;
+﻿using GameLogic.Binding.Binders;
 using GameLogic.Binding.Converters;
 using GameLogic.Binding.Paths;
 using GameLogic.Binding.Proxy.Sources.Expressions;

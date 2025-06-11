@@ -47,11 +47,11 @@ public class EntityPlayer : MonoBehaviour
 	}
 	void OnTriggerEnter(Collider other)
 	{
-		var name = other.gameObject.name;
-		if (name.StartsWith("enemy") || name.StartsWith("asteroid"))
-		{
-			GameEvent.Send(ActorEventDefine.PlayerDead,transform.position, transform.rotation);
-			PoolManager.Instance.PushGameObject(this.gameObject);
-		}
+		// var name = other.gameObject.name;
+		// if (name.StartsWith("enemy") || name.StartsWith("asteroid"))
+		// {
+		// 	GameEvent.Send(ActorEventDefine.PlayerDead,transform.position, transform.rotation);
+		// 	PoolManager.Instance.PushGameObject(this.gameObject);
+		// }
 	}
 }

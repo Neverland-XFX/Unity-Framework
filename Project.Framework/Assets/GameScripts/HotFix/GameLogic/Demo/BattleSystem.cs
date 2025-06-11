@@ -3,6 +3,7 @@ using Cysharp.Threading.Tasks;
 using GameLogic;
 using GameLogic.Binding.Services;
 using GameLogic.Contexts;
+using GameLogic.GoapModule.Demo;
 using GameLogic.Repositories;
 using GameLogic.Services;
 using UnityFramework;
@@ -78,6 +79,9 @@ public class BattleSystem : Singleton<BattleSystem>
 
         // 创建玩家实体对象
         var handle = PoolManager.Instance.GetGameObject("player_ship",parent: _roomRoot.transform);
+        
+        handle.transform.position = Vector3.zero;
+        handle.transform.rotation = Quaternion.identity;
         var entity = handle.GetComponent<EntityPlayer>();
 
         // 显示战斗界面
@@ -155,10 +159,13 @@ public class BattleSystem : Singleton<BattleSystem>
             {
                 // 生成敌人实体
                 var gameObject = PoolManager.Instance.GetGameObject(enemyLocation,parent: _roomRoot.transform);
-                gameObject.transform.position = spawnPosition;
-                gameObject.transform.rotation = spawnRotation;
+                RunDemoMain.GoapDemo.RunDemo(gameObject);
+                // gameObject.transform.position = spawnPosition;
+                // gameObject.transform.rotation = spawnRotation;
+                gameObject.transform.position = Vector3.zero;
+                gameObject.transform.rotation = Quaternion.identity;
                 var entity = gameObject.GetComponent<EntityEnemy>();
-                entity.InitEntity();
+                // entity.InitEntity();
             }
             else
             {
@@ -226,7 +233,7 @@ public class BattleSystem : Singleton<BattleSystem>
         gameObject.transform.rotation = rotation;
         var entity = gameObject.GetComponent<EntityEffect>();
         entity.InitEntity();
-
+        
         _totalScore += EnemyScore;
         
         GameEvent.Send(ActorEventDefine.ScoreChange, _totalScore);
@@ -240,7 +247,7 @@ public class BattleSystem : Singleton<BattleSystem>
         gameObject.transform.rotation = rotation;
         var entity = gameObject.GetComponent<EntityEffect>();
         entity.InitEntity();
-
+        
         _totalScore += AsteroidScore;
         GameEvent.Send(ActorEventDefine.ScoreChange, _totalScore);
     }
